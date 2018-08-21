@@ -100,8 +100,10 @@ func main() {
 		gl.Clear(gl.COLOR_BUFFER_BIT)
 
 		gl.UseProgram(shaderProgram)
+		vertexColorLocation := gl.GetUniformLocation(shaderProgram, gl.Str("ourColor\x00"))
 		gl.BindVertexArray(VAO)
 		gl.DrawArrays(gl.POINTS, 0, vsize)
+		gl.Uniform4f(vertexColorLocation, 0.0, 0.0, 1.0, 1.0)
 
 		// Maintenance
 		window.SwapBuffers()
@@ -186,9 +188,10 @@ void main()
 var fragShader = `
 #version 330 core
 out vec4 FragColor;
+uniform vec4 ourColor; // we set this variable in the OpenGL code.
 
 void main()
 {
-    FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);
+    FragColor = ourColor;
 } 
 ` + "\x00"
