@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"math"
 	"strings"
 
 	"github.com/go-gl/gl/v4.1-core/gl"
@@ -19,6 +20,8 @@ type point struct {
 type pixel struct {
 	position point
 	rgb      point
+	screenX  int
+	screenY  int
 }
 
 func convertToFloat32Slice(p []pixel) []float32 {
@@ -49,6 +52,8 @@ func main() {
 	yIncrement := float32(2.0) / float32(windowHeight)
 	X := float32(-1.0)
 	Y := float32(1.0)
+	cameraPos := point{400, 300, -1000}
+	var dir point
 
 	for i := 0; i < windowWidth; i++ {
 		X = float32(X) + xIncrement
@@ -57,13 +62,18 @@ func main() {
 			index := (i * windowHeight) + j
 			color := point{1.0, 0.0, 0.0}
 
+			if i == 300 && j == 400 {
+				dir = normalize(cameraPos, point{float32(i), float32(j), 0})
+				fmt.Println(dir)
+			}
+
 			if j%10 == 0 {
 				color = point{0.0, 1.0, 0.0}
 			}
 			if i%10 == 0 {
 				color = point{0.0, 0.0, 1.0}
 			}
-			vertices[index] = pixel{position: point{X, Y, 0.0}, rgb: color}
+			vertices[index] = pixel{position: point{X, Y, 0.0}, rgb: color, screenX: i, screenY: j}
 
 			//compute ray position for this pixel
 			//determine color for that pixel and set in object.
@@ -127,6 +137,23 @@ func main() {
 		window.SwapBuffers()
 		glfw.PollEvents()
 	}
+}
+
+func normalize(pointA point, pointB point) point {
+	res, translatedB := point{}, point{}
+	var mag float32
+
+	//translate to origin, direction will be the same
+	translatedB.x = pointB.x - pointA.x
+	translatedB.y = pointB.y - pointA.y
+	translatedB.z = pointB.z - pointA.z
+
+	mag = float32(math.Sqrt(math.Pow(float64(translatedB.x), 2) + math.Pow(float64(translatedB.y), 2) + math.Pow(float64(translatedB.z), 2)))
+
+	res.x = translatedB.x / mag
+	res.y = translatedB.y / mag
+	res.z = translatedB.z / mag
+	return res
 }
 
 func input(win *glfw.Window) {
