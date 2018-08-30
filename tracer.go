@@ -17,11 +17,50 @@ type point struct {
 	x, y, z float32
 }
 
+func minus(p1 point, p2 point) point {
+	res := point{}
+	res.x = p1.x - p2.x
+	res.y = p1.y - p2.y
+	res.z = p1.z - p2.z
+	return res
+}
+func plus(p1 point, p2 point) point {
+	return point{
+		x: p1.x + p2.x,
+		y: p1.y + p2.y,
+		z: p1.z + p2.z}
+}
+func div(p1 point, v float32) point {
+	return point{
+		x: p1.x / v,
+		y: p1.y / v,
+		z: p1.z / v}
+}
+func dotProduct(p1 point, p2 point) float32 {
+	res := point{}
+	res.x = p1.x * p2.x
+	res.y = p1.y * p2.y
+	res.z = p1.z * p2.z
+
+	return res.x + res.y + res.z
+}
+
 type pixel struct {
 	position point
 	rgb      point
 	screenX  int
 	screenY  int
+}
+
+type circle struct {
+	center point
+	radius float32
+	color  point
+}
+
+type ray struct {
+	origin    point
+	direction point
 }
 
 func convertToFloat32Slice(p []pixel) []float32 {
@@ -54,6 +93,7 @@ func main() {
 	Y := float32(1.0)
 	cameraPos := point{400, 300, -1000}
 	var dir point
+	cir := circle{center: point{140, 160, 800}, radius: 100, color: point{0, 0, 1}}
 
 	for i := 0; i < windowWidth; i++ {
 		X = float32(X) + xIncrement
@@ -62,21 +102,11 @@ func main() {
 			index := (i * windowHeight) + j
 			color := point{1.0, 0.0, 0.0}
 
-			if i == 300 && j == 400 {
-				dir = normalize(cameraPos, point{float32(i), float32(j), 0})
-				fmt.Println(dir)
-			}
-
-			if j%10 == 0 {
-				color = point{0.0, 1.0, 0.0}
-			}
-			if i%10 == 0 {
-				color = point{0.0, 0.0, 1.0}
+			dir = normalize(cameraPos, point{float32(i), float32(j), 0})
+			if do, val := doesCircleIntersect(cir, ray{origin: cameraPos, direction: dir}); do {
+				color = div(cir.color, (val / 20))
 			}
 			vertices[index] = pixel{position: point{X, Y, 0.0}, rgb: color, screenX: i, screenY: j}
-
-			//compute ray position for this pixel
-			//determine color for that pixel and set in object.
 		}
 		Y = float32(1.0)
 	}
@@ -137,6 +167,32 @@ func main() {
 		window.SwapBuffers()
 		glfw.PollEvents()
 	}
+}
+
+//https://www.scratchapixel.com/lessons/3d-basic-rendering/minimal-ray-tracer-rendering-simple-shapes/ray-sphere-intersection
+func doesCircleIntersect(c circle, r ray) (bool, float32) {
+	L := minus(c.center, r.origin)
+	tca := dotProduct(L, r.direction)
+	if tca < 0 {
+		return false, 0
+	}
+
+	f64 := float64(dotProduct(L, L) - (tca * tca))
+	d := math.Sqrt(f64)
+
+	if d < 0 || float32(d) > c.radius {
+		return false, 0
+	}
+	thcPrep := float64(c.radius*c.radius) - (d * d)
+	thc := float32(math.Sqrt(thcPrep))
+
+	t0 := tca - thc
+	t1 := tca + thc
+
+	if t0+t1 > 0 {
+		return true, float32(d)
+	}
+	return true, float32(d)
 }
 
 func normalize(pointA point, pointB point) point {
