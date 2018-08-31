@@ -24,6 +24,13 @@ func minus(p1 point, p2 point) point {
 	res.z = p1.z - p2.z
 	return res
 }
+func minusPercent(p1 point, v float32) point {
+	res := point{}
+	res.x = p1.x - v
+	res.y = p1.y - v
+	res.z = p1.z - v
+	return res
+}
 func plus(p1 point, p2 point) point {
 	return point{
 		x: p1.x + p2.x,
@@ -35,6 +42,12 @@ func div(p1 point, v float32) point {
 		x: p1.x / v,
 		y: p1.y / v,
 		z: p1.z / v}
+}
+func mult(p1 point, v float32) point {
+	return point{
+		x: p1.x * v,
+		y: p1.y * v,
+		z: p1.z * v}
 }
 func dotProduct(p1 point, p2 point) float32 {
 	res := point{}
@@ -53,9 +66,13 @@ type pixel struct {
 }
 
 type circle struct {
-	center point
-	radius float32
-	color  point
+	center       point
+	radius       float32
+	color        point
+	xStripeColor point
+	xStripeWidth int
+	yStripeColor point
+	yStripeWidth int
 }
 
 type ray struct {
@@ -85,6 +102,7 @@ func convertToFloat32Slice(p []pixel) []float32 {
 
 func main() {
 	var VBO, VAO uint32
+	circSlice := make([]circle, 2)
 	pixelCount := windowHeight * windowWidth
 	vertices := make([]pixel, pixelCount)
 	xIncrement := float32(2.0) / float32(windowWidth)
@@ -93,7 +111,13 @@ func main() {
 	Y := float32(1.0)
 	cameraPos := point{400, 300, -1000}
 	var dir point
-	cir := circle{center: point{140, 160, 800}, radius: 100, color: point{0, 0, 1}}
+	cir := circle{center: point{120, 450, 200}, radius: 100, color: point{0, .3, .4}}
+	cir2 := circle{center: point{100, 100, 0}, radius: 100, color: point{0, 1, 0}}
+	cir3 := circle{center: point{700, 400, 0}, radius: 100, color: point{0.5, 0.5, 0}, xStripeColor: point{0.0, 0.0, 1.0}, xStripeWidth: 3}
+	cir4 := circle{center: point{400, 500, 0}, radius: 100, color: point{0.8, 0.1, 0.1}, yStripeColor: point{0.3, 0.0, 0.3}, yStripeWidth: 3}
+	cir5 := circle{center: point{400, 200, 0}, radius: 100, color: point{0.8, 0.1, 0.1}, xStripeColor: point{0.0, 0.0, 1.0}, xStripeWidth: 3, yStripeColor: point{0.3, 0.0, 0.3}, yStripeWidth: 3}
+	cir6 := circle{center: point{700, 100, 0}, radius: 100, color: point{1, 1, 1}}
+	circSlice = append(circSlice, cir, cir2, cir3, cir4, cir5, cir6)
 
 	for i := 0; i < windowWidth; i++ {
 		X = float32(X) + xIncrement
@@ -103,8 +127,23 @@ func main() {
 			color := point{1.0, 0.0, 0.0}
 
 			dir = normalize(cameraPos, point{float32(i), float32(j), 0})
-			if do, val := doesCircleIntersect(cir, ray{origin: cameraPos, direction: dir}); do {
-				color = div(cir.color, (val / 20))
+			for _, e := range circSlice {
+				cirMagMax := magnitude(minus(e.center, cameraPos))
+				cirMagMin := int(cirMagMax - e.radius)
+				if do, val := doesCircleIntersect(e, ray{origin: cameraPos, direction: dir}); do {
+					intersectPoint := plus(cameraPos, mult(dir, val))
+					intersectMag := int(magnitude(minus(intersectPoint, cameraPos)))
+
+					lightingAdjust := 1 - (float64(intersectMag)-float64(cirMagMin))/float64(e.radius)
+					lightingAdjust = lightingAdjust * .8
+					if e.xStripeWidth != 0 && int(intersectPoint.x)%10 <= e.xStripeWidth {
+						color = mult(e.xStripeColor, float32(lightingAdjust))
+					} else if e.yStripeWidth != 0 && int(intersectPoint.y)%10 <= e.yStripeWidth {
+						color = mult(e.yStripeColor, float32(lightingAdjust))
+					} else {
+						color = mult(e.color, float32(lightingAdjust))
+					}
+				}
 			}
 			vertices[index] = pixel{position: point{X, Y, 0.0}, rgb: color, screenX: i, screenY: j}
 		}
@@ -190,11 +229,13 @@ func doesCircleIntersect(c circle, r ray) (bool, float32) {
 	t1 := tca + thc
 
 	if t0+t1 > 0 {
-		return true, float32(d)
+		return true, float32(t0)
 	}
-	return true, float32(d)
+	return true, float32(t1)
 }
-
+func magnitude(p point) float32 {
+	return float32(math.Sqrt(math.Pow(float64(p.x), 2) + math.Pow(float64(p.y), 2) + math.Pow(float64(p.z), 2)))
+}
 func normalize(pointA point, pointB point) point {
 	res, translatedB := point{}, point{}
 	var mag float32
@@ -204,7 +245,7 @@ func normalize(pointA point, pointB point) point {
 	translatedB.y = pointB.y - pointA.y
 	translatedB.z = pointB.z - pointA.z
 
-	mag = float32(math.Sqrt(math.Pow(float64(translatedB.x), 2) + math.Pow(float64(translatedB.y), 2) + math.Pow(float64(translatedB.z), 2)))
+	mag = magnitude(translatedB)
 
 	res.x = translatedB.x / mag
 	res.y = translatedB.y / mag
