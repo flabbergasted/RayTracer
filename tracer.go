@@ -124,7 +124,7 @@ func main() {
 		for j := 0; j < windowHeight; j++ {
 			Y = float32(Y) - yIncrement
 			index := (i * windowHeight) + j
-			color := point{1.0, 0.0, 0.0}
+			color := point{0.3, 0.0, 0.0}
 
 			dir = normalize(cameraPos, point{float32(i), float32(j), 0})
 			for _, e := range circSlice {
