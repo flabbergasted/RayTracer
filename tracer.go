@@ -22,28 +22,7 @@ type pixel struct {
 	screenY  int
 }
 
-func convertToFloat32Slice(p []pixel) []float32 {
-	result := make([]float32, len(p)*6)
-	ctr := 0
-	for i := 0; i < len(p); i++ {
-		result[ctr] = p[i].position.X
-		ctr++
-		result[ctr] = p[i].position.Y
-		ctr++
-		result[ctr] = p[i].position.Z
-		ctr++
-		result[ctr] = p[i].rgb.X
-		ctr++
-		result[ctr] = p[i].rgb.Y
-		ctr++
-		result[ctr] = p[i].rgb.Z
-		ctr++
-	}
-	return result
-}
-
-func main() {
-	var VBO, VAO uint32
+func generatePixelData() []pixel {
 	circSlice := make([]shapes.Intersectable, 0)
 	pixelCount := windowHeight * windowWidth
 	vertices := make([]pixel, pixelCount)
@@ -54,11 +33,11 @@ func main() {
 	cameraPos := rays.Point{X: 400, Y: 300, Z: -1000}
 	var dir rays.Point
 	cir := shapes.NewLitCircle(shapes.Circle{Center: rays.Point{X: 120, Y: 450, Z: 0}, Radius: 100, Color: rays.Point{X: 0, Y: .3, Z: .4}})
-	cir2 := shapes.NewLitCircle(shapes.Circle{Center: rays.Point{X: 120, Y: 450, Z: 200}, Radius: 100, Color: rays.Point{X: 0, Y: 1, Z: 0}})
-	cir3 := shapes.NewLitCircle(shapes.Circle{Center: rays.Point{X: 120, Y: 450, Z: 400}, Radius: 100, Color: rays.Point{X: 0.5, Y: 0.5, Z: 0}, XStripeColor: rays.Point{X: 0.0, Y: 0.0, Z: 1.0}, XStripeWidth: 3})
-	cir4 := shapes.NewLitCircle(shapes.Circle{Center: rays.Point{X: 120, Y: 450, Z: 600}, Radius: 100, Color: rays.Point{X: 0.8, Y: 0.1, Z: 0.1}, YStripeColor: rays.Point{X: 0.3, Y: 0.0, Z: 0.3}, YStripeWidth: 3})
-	cir5 := shapes.NewLitCircle(shapes.Circle{Center: rays.Point{X: 120, Y: 450, Z: 800}, Radius: 100, Color: rays.Point{X: 0.8, Y: 0.1, Z: 0.1}, XStripeColor: rays.Point{X: 0.0, Y: 0.0, Z: 1.0}, XStripeWidth: 3, YStripeColor: rays.Point{X: 0.3, Y: 0.0, Z: 0.3}, YStripeWidth: 3})
-	cir6 := shapes.NewLitCircle(shapes.Circle{Center: rays.Point{X: 120, Y: 450, Z: 1000}, Radius: 100, Color: rays.Point{X: 1, Y: 1, Z: 1}})
+	cir2 := shapes.NewLitCircle(shapes.Circle{Center: rays.Point{X: 120, Y: 450, Z: 300}, Radius: 100, Color: rays.Point{X: 0, Y: 1, Z: 0}})
+	cir3 := shapes.NewLitCircle(shapes.Circle{Center: rays.Point{X: 120, Y: 450, Z: 600}, Radius: 100, Color: rays.Point{X: 0.5, Y: 0.5, Z: 0}, XStripeColor: rays.Point{X: 0.0, Y: 0.0, Z: 1.0}, XStripeWidth: 3})
+	cir4 := shapes.NewLitCircle(shapes.Circle{Center: rays.Point{X: 120, Y: 450, Z: 900}, Radius: 100, Color: rays.Point{X: 0.8, Y: 0.1, Z: 0.1}, YStripeColor: rays.Point{X: 0.3, Y: 0.0, Z: 0.3}, YStripeWidth: 3})
+	cir5 := shapes.NewLitCircle(shapes.Circle{Center: rays.Point{X: 120, Y: 450, Z: 1200}, Radius: 100, Color: rays.Point{X: 0.8, Y: 0.1, Z: 0.1}, XStripeColor: rays.Point{X: 0.0, Y: 0.0, Z: 1.0}, XStripeWidth: 3, YStripeColor: rays.Point{X: 0.3, Y: 0.0, Z: 0.3}, YStripeWidth: 3})
+	cir6 := shapes.NewLitCircle(shapes.Circle{Center: rays.Point{X: 120, Y: 450, Z: 1500}, Radius: 100, Color: rays.Point{X: 1, Y: 1, Z: 1}})
 	circSlice = append(circSlice, cir, cir2, cir3, cir4, cir5, cir6)
 
 	for i := 0; i < windowWidth; i++ {
@@ -84,8 +63,37 @@ func main() {
 		}
 		Y = float32(1.0)
 	}
+
+	return vertices
+}
+
+func convertToFloat32Slice(p []pixel) []float32 {
+	result := make([]float32, len(p)*6)
+	ctr := 0
+	for i := 0; i < len(p); i++ {
+		result[ctr] = p[i].position.X
+		ctr++
+		result[ctr] = p[i].position.Y
+		ctr++
+		result[ctr] = p[i].position.Z
+		ctr++
+		result[ctr] = p[i].rgb.X
+		ctr++
+		result[ctr] = p[i].rgb.Y
+		ctr++
+		result[ctr] = p[i].rgb.Z
+		ctr++
+	}
+	return result
+}
+
+func main() {
+	var VBO, VAO uint32
+
+	vertices := generatePixelData()
 	vsize := int32(len(vertices))
 	flatVertex := convertToFloat32Slice(vertices)
+
 	if err := glfw.Init(); err != nil {
 		log.Fatalln("failed to initialize glfw:", err)
 	}
