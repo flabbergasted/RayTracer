@@ -53,12 +53,12 @@ func main() {
 	Y := float32(1.0)
 	cameraPos := rays.Point{X: 400, Y: 300, Z: -1000}
 	var dir rays.Point
-	cir := shapes.NewLitCircle(shapes.Circle{Center: rays.Point{X: 120, Y: 450, Z: 200}, Radius: 100, Color: rays.Point{X: 0, Y: .3, Z: .4}})
-	cir2 := shapes.NewLitCircle(shapes.Circle{Center: rays.Point{X: 100, Y: 100, Z: 0}, Radius: 100, Color: rays.Point{X: 0, Y: 1, Z: 0}})
-	cir3 := shapes.NewLitCircle(shapes.Circle{Center: rays.Point{X: 700, Y: 400, Z: 0}, Radius: 100, Color: rays.Point{X: 0.5, Y: 0.5, Z: 0}, XStripeColor: rays.Point{X: 0.0, Y: 0.0, Z: 1.0}, XStripeWidth: 3})
-	cir4 := shapes.NewLitCircle(shapes.Circle{Center: rays.Point{X: 400, Y: 500, Z: 0}, Radius: 100, Color: rays.Point{X: 0.8, Y: 0.1, Z: 0.1}, YStripeColor: rays.Point{X: 0.3, Y: 0.0, Z: 0.3}, YStripeWidth: 3})
-	cir5 := shapes.NewLitCircle(shapes.Circle{Center: rays.Point{X: 400, Y: 200, Z: 0}, Radius: 100, Color: rays.Point{X: 0.8, Y: 0.1, Z: 0.1}, XStripeColor: rays.Point{X: 0.0, Y: 0.0, Z: 1.0}, XStripeWidth: 3, YStripeColor: rays.Point{X: 0.3, Y: 0.0, Z: 0.3}, YStripeWidth: 3})
-	cir6 := shapes.NewLitCircle(shapes.Circle{Center: rays.Point{X: 700, Y: 100, Z: 0}, Radius: 100, Color: rays.Point{X: 1, Y: 1, Z: 1}})
+	cir := shapes.NewLitCircle(shapes.Circle{Center: rays.Point{X: 120, Y: 450, Z: 0}, Radius: 100, Color: rays.Point{X: 0, Y: .3, Z: .4}})
+	cir2 := shapes.NewLitCircle(shapes.Circle{Center: rays.Point{X: 120, Y: 450, Z: 200}, Radius: 100, Color: rays.Point{X: 0, Y: 1, Z: 0}})
+	cir3 := shapes.NewLitCircle(shapes.Circle{Center: rays.Point{X: 120, Y: 450, Z: 400}, Radius: 100, Color: rays.Point{X: 0.5, Y: 0.5, Z: 0}, XStripeColor: rays.Point{X: 0.0, Y: 0.0, Z: 1.0}, XStripeWidth: 3})
+	cir4 := shapes.NewLitCircle(shapes.Circle{Center: rays.Point{X: 120, Y: 450, Z: 600}, Radius: 100, Color: rays.Point{X: 0.8, Y: 0.1, Z: 0.1}, YStripeColor: rays.Point{X: 0.3, Y: 0.0, Z: 0.3}, YStripeWidth: 3})
+	cir5 := shapes.NewLitCircle(shapes.Circle{Center: rays.Point{X: 120, Y: 450, Z: 800}, Radius: 100, Color: rays.Point{X: 0.8, Y: 0.1, Z: 0.1}, XStripeColor: rays.Point{X: 0.0, Y: 0.0, Z: 1.0}, XStripeWidth: 3, YStripeColor: rays.Point{X: 0.3, Y: 0.0, Z: 0.3}, YStripeWidth: 3})
+	cir6 := shapes.NewLitCircle(shapes.Circle{Center: rays.Point{X: 120, Y: 450, Z: 1000}, Radius: 100, Color: rays.Point{X: 1, Y: 1, Z: 1}})
 	circSlice = append(circSlice, cir, cir2, cir3, cir4, cir5, cir6)
 
 	for i := 0; i < windowWidth; i++ {
@@ -70,9 +70,14 @@ func main() {
 
 			dir = rays.Normalize(cameraPos, rays.Point{X: float32(i), Y: float32(j), Z: 0})
 			cameraRay := rays.Ray{Origin: cameraPos, Direction: dir}
+			distanceFromCamera := 100000
 			for _, e := range circSlice {
 				if do, intersectPoint, _ := e.DoesRayIntersect(cameraRay); do {
-					color = e.ColorAtPoint(intersectPoint, cameraPos)
+					testDist := int(rays.Magnitude(rays.Subtract(intersectPoint, cameraPos)))
+					if testDist < distanceFromCamera {
+						color = e.ColorAtPoint(intersectPoint, cameraPos)
+						distanceFromCamera = testDist
+					}
 				}
 			}
 			vertices[index] = pixel{position: rays.Point{X: X, Y: Y, Z: 0.0}, rgb: color, screenX: i, screenY: j}
