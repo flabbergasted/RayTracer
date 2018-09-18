@@ -70,3 +70,12 @@ func Normalize(PointA Point, PointB Point) Point {
 	res.Z = translatedB.Z / mag
 	return res
 }
+
+//Angle returnes the angle between 2 rays, in radians. 1.57 rads = 90, pi rads = 180
+func Angle(r1 Ray, r2 Ray) float32 {
+	mag1 := Magnitude(r1.Direction) //both magnitudes should be 1, since direction is normalized
+	mag2 := Magnitude(r2.Direction)
+	dotRes := DotProduct(r1.Direction, r2.Direction) / (mag1 * mag2)
+
+	return float32(math.Acos(float64(dotRes)))
+}
