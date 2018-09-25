@@ -2,15 +2,18 @@ package rays
 
 import "math"
 
+//Point represents a 3d point
 type Point struct {
 	X, Y, Z float32
 }
 
+//Ray represents a traditional vector 'ray' consisting of an origin and a direction
 type Ray struct {
 	Origin    Point
 	Direction Point
 }
 
+//Subtract returns the subtraction between 2 points
 func Subtract(p1 Point, p2 Point) Point {
 	res := Point{}
 	res.X = p1.X - p2.X
@@ -18,6 +21,8 @@ func Subtract(p1 Point, p2 Point) Point {
 	res.Z = p1.Z - p2.Z
 	return res
 }
+
+//SubtractFloat returns the subtraction a point and a float32
 func SubtractFloat(p1 Point, v float32) Point {
 	res := Point{}
 	res.X = p1.X - v
@@ -25,24 +30,32 @@ func SubtractFloat(p1 Point, v float32) Point {
 	res.Z = p1.Z - v
 	return res
 }
+
+//Add returns the addition between 2 points
 func Add(p1 Point, p2 Point) Point {
 	return Point{
 		X: p1.X + p2.X,
 		Y: p1.Y + p2.Y,
 		Z: p1.Z + p2.Z}
 }
+
+//Divide returns the division between a point and a float (scales down)
 func Divide(p1 Point, v float32) Point {
 	return Point{
 		X: p1.X / v,
 		Y: p1.Y / v,
 		Z: p1.Z / v}
 }
+
+//Multiply returns the multiplication between a point and a float (scales up)
 func Multiply(p1 Point, v float32) Point {
 	return Point{
 		X: p1.X * v,
 		Y: p1.Y * v,
 		Z: p1.Z * v}
 }
+
+//DotProduct returns the dot product of two points, essentially projecting p2 onto p1 and returning the magnitude of the projection.
 func DotProduct(p1 Point, p2 Point) float32 {
 	res := Point{}
 	res.X = p1.X * p2.X
@@ -51,9 +64,13 @@ func DotProduct(p1 Point, p2 Point) float32 {
 
 	return res.X + res.Y + res.Z
 }
+
+//Magnitude returns the length of a vector between the origin and a point p
 func Magnitude(p Point) float32 {
 	return float32(math.Sqrt(math.Pow(float64(p.X), 2) + math.Pow(float64(p.Y), 2) + math.Pow(float64(p.Z), 2)))
 }
+
+//Normalize returns a direction between pointA and pointB (which means it's a vector of length 1)
 func Normalize(PointA Point, PointB Point) Point {
 	res, translatedB := Point{}, Point{}
 	var mag float32
