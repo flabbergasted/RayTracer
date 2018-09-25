@@ -6,6 +6,7 @@ import (
 	"github.com/flabbergasted/RayTracer/rays"
 )
 
+//Circle represents a 3d sphere
 type Circle struct {
 	Center       rays.Point
 	Radius       float32
@@ -16,7 +17,7 @@ type Circle struct {
 	YStripeWidth int
 }
 
-//https://www.scratchapixel.com/lessons/3d-basic-rendering/minimal-ray-tracer-rendering-simple-shapes/ray-sphere-intersection
+//DoesRayIntersect performs the ray intersection described here:https://www.scratchapixel.com/lessons/3d-basic-rendering/minimal-ray-tracer-rendering-simple-shapes/ray-sphere-intersection
 func (c Circle) DoesRayIntersect(r rays.Ray) (doesIntersect bool, intersectPoint0 rays.Point, intersectPoint1 rays.Point) {
 	L := rays.Subtract(c.Center, r.Origin)
 	tca := rays.DotProduct(L, r.Direction)
@@ -41,6 +42,7 @@ func (c Circle) DoesRayIntersect(r rays.Ray) (doesIntersect bool, intersectPoint
 	return true, p0, p1
 }
 
+//ColorAtPoint returns the color at the given point p
 func (c Circle) ColorAtPoint(p rays.Point, cameraPosition rays.Point) rays.Point {
 	var color rays.Point
 	if c.XStripeWidth != 0 && int(p.X)%10 <= c.XStripeWidth {

@@ -2,15 +2,19 @@ package shapes
 
 import "github.com/flabbergasted/RayTracer/rays"
 
+//Lighting represents a shape lit by some method
 type Lighting struct {
 	Inner       Circle
 	LightSource rays.Point
 	lightMethod func(p rays.Point, cameraPosition rays.Point, l Lighting) rays.Point
 }
 
+//DoesRayIntersect forwards the call to the decorated shape
 func (l Lighting) DoesRayIntersect(r rays.Ray) (bool, rays.Point, rays.Point) {
 	return l.Inner.DoesRayIntersect(r)
 }
+
+//ColorAtPoint forwards the call to the decorated shape
 func (l Lighting) ColorAtPoint(p rays.Point, cameraPosition rays.Point) rays.Point {
 	return l.lightMethod(p, cameraPosition, l)
 }
@@ -24,7 +28,7 @@ func reflectionAngleLight(p rays.Point, cameraPosition rays.Point, l Lighting) r
 	angleDifference := rays.Angle(centerToLight, centerToPoint)
 
 	if angleDifference > maxAngle {
-		return rays.Point{0, 0, 0}
+		return rays.Point{X: 0, Y: 0, Z: 0}
 	}
 	lightingAdjust = 1 - (angleDifference / maxAngle)
 	return rays.Multiply(color, lightingAdjust)
@@ -60,10 +64,12 @@ func ambientLight(p rays.Point, cameraPosition rays.Point, l Lighting) rays.Poin
 	return rays.Multiply(color, float32(lightingAdjust))
 }
 
+//NewLitCircle creates a sphere lit by ambient light
 func NewLitCircle(c Circle, lightSource rays.Point) Lighting {
 	return Lighting{Inner: c, LightSource: lightSource, lightMethod: ambientLight}
 }
 
+//NewLightSourceCircle creates a sphere lit by a light source
 func NewLightSourceCircle(c Circle, lightSource rays.Point) Lighting {
 	return Lighting{Inner: c, LightSource: lightSource, lightMethod: reflectionAngleLight}
 }
