@@ -8,4 +8,5 @@ import (
 type Intersectable interface {
 	DoesRayIntersect(r rays.Ray) (bool, rays.Point, rays.Point)
 	ColorAtPoint(p rays.Point, cameraPosition rays.Point) rays.Point
+	NormalAtPoint(p rays.Point) rays.Ray
 }

@@ -54,3 +54,9 @@ func (c Circle) ColorAtPoint(p rays.Point, cameraPosition rays.Point) rays.Point
 	}
 	return color
 }
+
+//NormalAtPoint returns the surface normal for this intersectable shape at point p
+func (c Circle) NormalAtPoint(p rays.Point) rays.Ray {
+	normal := rays.Normalize(p, c.Center)
+	return rays.Ray{Origin: p, Direction: normal}
+}

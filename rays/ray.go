@@ -70,7 +70,7 @@ func Magnitude(p Point) float32 {
 	return float32(math.Sqrt(math.Pow(float64(p.X), 2) + math.Pow(float64(p.Y), 2) + math.Pow(float64(p.Z), 2)))
 }
 
-//Normalize returns a direction between pointA and pointB (which means it's a vector of length 1)
+//Normalize returns a normalized direction between pointA and pointB (i.e. a vector of length 1)
 func Normalize(PointA Point, PointB Point) Point {
 	res, translatedB := Point{}, Point{}
 	var mag float32
@@ -85,6 +85,20 @@ func Normalize(PointA Point, PointB Point) Point {
 	res.X = translatedB.X / mag
 	res.Y = translatedB.Y / mag
 	res.Z = translatedB.Z / mag
+	return res
+}
+
+//CrossProduct returns the cross product between 2 rays sharing an origin. Resulting ray is orthogonal to the original 2.
+func CrossProduct(r1 Ray, r2 Ray) Ray {
+	res := Ray{}
+
+	res.Direction.X = r1.Direction.Y*r2.Direction.Z - r1.Direction.Z*r2.Direction.Y
+	res.Direction.Y = r1.Direction.Z*r2.Direction.X - r1.Direction.X*r2.Direction.Z
+	res.Direction.Z = r1.Direction.X*r2.Direction.Y - r1.Direction.Y*r2.Direction.X
+
+	res.Origin = r1.Origin
+
+	res.Direction = Normalize(res.Origin, res.Direction)
 	return res
 }
 

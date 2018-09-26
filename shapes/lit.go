@@ -4,7 +4,7 @@ import "github.com/flabbergasted/RayTracer/rays"
 
 //Lighting represents a shape lit by some method
 type Lighting struct {
-	Inner       Circle
+	Inner       Intersectable
 	LightSource rays.Point
 	lightMethod func(p rays.Point, cameraPosition rays.Point, l Lighting) rays.Point
 }
@@ -19,22 +19,28 @@ func (l Lighting) ColorAtPoint(p rays.Point, cameraPosition rays.Point) rays.Poi
 	return l.lightMethod(p, cameraPosition, l)
 }
 
+//NormalAtPoint returns the surface normal for this intersectable shape at point p
+func (l Lighting) NormalAtPoint(p rays.Point) rays.Ray {
+	return l.Inner.NormalAtPoint(p)
+}
+
 //returns lighting based on the reflection angle a point has fromt he light source.
 func reflectionAngleLight(p rays.Point, cameraPosition rays.Point, l Lighting) rays.Point {
 	var lightingAdjust, maxAngle float32 = 0, 1.57
 	color := l.Inner.ColorAtPoint(p, cameraPosition)
-	centerToLight := rays.Ray{Direction: rays.Subtract(l.Inner.Center, l.LightSource)}
-	centerToPoint := rays.Ray{Direction: rays.Subtract(l.Inner.Center, p)}
-	angleDifference := rays.Angle(centerToLight, centerToPoint)
+	pointNormal := l.Inner.NormalAtPoint(p)
+	pointToLight := rays.Ray{Direction: rays.Subtract(p, l.LightSource)}
+	angleDifference := rays.Angle(pointNormal, pointToLight)
 
-	if angleDifference > maxAngle {
-		return rays.Point{X: 0, Y: 0, Z: 0}
-	}
 	lightingAdjust = 1 - (angleDifference / maxAngle)
+
+	if lightingAdjust < 0.036 {
+		lightingAdjust = 0.036
+	}
 	return rays.Multiply(color, lightingAdjust)
 }
 
-//returns lighting based on how far a point is away from the light source.
+/* //returns lighting based on how far a point is away from the light source.
 func lightSourceLight(p rays.Point, cameraPosition rays.Point, l Lighting) rays.Point {
 	maxLightDist := 200
 	color := l.Inner.ColorAtPoint(p, cameraPosition)
@@ -67,9 +73,9 @@ func ambientLight(p rays.Point, cameraPosition rays.Point, l Lighting) rays.Poin
 //NewLitCircle creates a sphere lit by ambient light
 func NewLitCircle(c Circle, lightSource rays.Point) Lighting {
 	return Lighting{Inner: c, LightSource: lightSource, lightMethod: ambientLight}
-}
+} */
 
 //NewLightSourceCircle creates a sphere lit by a light source
-func NewLightSourceCircle(c Circle, lightSource rays.Point) Lighting {
+func NewLightSourceCircle(c Intersectable, lightSource rays.Point) Lighting {
 	return Lighting{Inner: c, LightSource: lightSource, lightMethod: reflectionAngleLight}
 }

@@ -32,19 +32,27 @@ func generatePixelData() []pixel {
 	Y := float32(1.0)
 	cameraPos := rays.Point{X: 400, Y: 300, Z: -1000}
 	var dir rays.Point
-	light := shapes.Circle{Center: rays.Point{X: 300, Y: 450, Z: 50}, Radius: 5, Color: rays.Point{X: 1, Y: 1, Z: 1}}
+
+	light1 := shapes.Circle{Center: rays.Point{X: 400, Y: -600, Z: 0}, Radius: 5, Color: rays.Point{X: 1, Y: 1, Z: 1}}
+	light := shapes.Circle{Center: rays.Point{X: 250, Y: 450, Z: -250}, Radius: 5, Color: rays.Point{X: 1, Y: 1, Z: 1}}
+	triangle := shapes.NewLightSourceCircle(shapes.Plane{
+		CornerOne:   rays.Point{X: 0, Y: 650, Z: 400},
+		CornerTwo:   rays.Point{X: 400, Y: 650, Z: 400},
+		CornerThree: rays.Point{X: 400, Y: 650, Z: 0},
+		Color:       rays.Point{X: 1, Y: 1, Z: 1}}, light.Center)
+
 	cirlitGreen := shapes.NewLightSourceCircle(shapes.Circle{Center: rays.Point{X: 400, Y: 450, Z: 150}, Radius: 100, Color: rays.Point{X: 0, Y: 1, Z: 0}}, light.Center)
 	cirlitGreen2 := shapes.NewLightSourceCircle(shapes.Circle{Center: rays.Point{X: 525, Y: 450, Z: 50}, Radius: 100, Color: rays.Point{X: 0, Y: 1, Z: 0}}, light.Center)
 	cirlitStripe := shapes.NewLightSourceCircle(shapes.Circle{Center: rays.Point{X: 200, Y: 250, Z: 150}, Radius: 100, Color: rays.Point{X: 0.8, Y: 0.1, Z: 0.1}, YStripeColor: rays.Point{X: 0.3, Y: 0.0, Z: 0.3}, YStripeWidth: 3}, light.Center)
 	cirlitWhite := shapes.NewLightSourceCircle(shapes.Circle{Center: rays.Point{X: 200, Y: 450, Z: 150}, Radius: 100, Color: rays.Point{X: 1, Y: 1, Z: 1}}, light.Center)
 
-	cir := shapes.NewLitCircle(shapes.Circle{Center: rays.Point{X: 0, Y: 450, Z: 0}, Radius: 100, Color: rays.Point{X: 0, Y: .3, Z: .4}}, light.Center)
-	cir2 := shapes.NewLitCircle(shapes.Circle{Center: rays.Point{X: 120, Y: 450, Z: 300}, Radius: 100, Color: rays.Point{X: 0, Y: 1, Z: 0}}, light.Center)
-	cir3 := shapes.NewLitCircle(shapes.Circle{Center: rays.Point{X: 120, Y: 450, Z: 600}, Radius: 100, Color: rays.Point{X: 0.5, Y: 0.5, Z: 0}, XStripeColor: rays.Point{X: 0.0, Y: 0.0, Z: 1.0}, XStripeWidth: 3}, light.Center)
-	cir4 := shapes.NewLitCircle(shapes.Circle{Center: rays.Point{X: 120, Y: 450, Z: 900}, Radius: 100, Color: rays.Point{X: 0.8, Y: 0.1, Z: 0.1}, YStripeColor: rays.Point{X: 0.3, Y: 0.0, Z: 0.3}, YStripeWidth: 3}, light.Center)
-	cir5 := shapes.NewLitCircle(shapes.Circle{Center: rays.Point{X: 120, Y: 450, Z: 1200}, Radius: 100, Color: rays.Point{X: 0.8, Y: 0.1, Z: 0.1}, XStripeColor: rays.Point{X: 0.0, Y: 0.0, Z: 1.0}, XStripeWidth: 3, YStripeColor: rays.Point{X: 0.3, Y: 0.0, Z: 0.3}, YStripeWidth: 3}, light.Center)
-	cir6 := shapes.NewLitCircle(shapes.Circle{Center: rays.Point{X: 120, Y: 450, Z: 1500}, Radius: 100, Color: rays.Point{X: 1, Y: 1, Z: 1}}, light.Center)
-	circSlice = append(circSlice, cir, cir2, cir3, cir4, cir5, cir6, cirlitGreen, cirlitGreen2, cirlitStripe, cirlitWhite, light)
+	cir := shapes.NewLightSourceCircle(shapes.Circle{Center: rays.Point{X: 0, Y: 450, Z: 0}, Radius: 100, Color: rays.Point{X: 0, Y: .3, Z: .4}}, light.Center)
+	cir2 := shapes.NewLightSourceCircle(shapes.Circle{Center: rays.Point{X: 120, Y: 450, Z: 300}, Radius: 100, Color: rays.Point{X: 0, Y: 1, Z: 0}}, light.Center)
+	cir3 := shapes.NewLightSourceCircle(shapes.Circle{Center: rays.Point{X: 120, Y: 450, Z: 600}, Radius: 100, Color: rays.Point{X: 0.5, Y: 0.5, Z: 0}, XStripeColor: rays.Point{X: 0.0, Y: 0.0, Z: 1.0}, XStripeWidth: 3}, light.Center)
+	cir4 := shapes.NewLightSourceCircle(shapes.Circle{Center: rays.Point{X: 120, Y: 450, Z: 900}, Radius: 100, Color: rays.Point{X: 0.8, Y: 0.1, Z: 0.1}, YStripeColor: rays.Point{X: 0.3, Y: 0.0, Z: 0.3}, YStripeWidth: 3}, light.Center)
+	cir5 := shapes.NewLightSourceCircle(shapes.Circle{Center: rays.Point{X: 600, Y: 200, Z: 30}, Radius: 100, Color: rays.Point{X: 0.8, Y: 0.1, Z: 0.1}, XStripeColor: rays.Point{X: 0.0, Y: 0.0, Z: 1.0}, XStripeWidth: 3, YStripeColor: rays.Point{X: 0.3, Y: 0.0, Z: 0.3}, YStripeWidth: 3}, light.Center)
+	cir6 := shapes.NewLightSourceCircle(shapes.Circle{Center: rays.Point{X: 120, Y: 450, Z: 1500}, Radius: 100, Color: rays.Point{X: 1, Y: 1, Z: 1}}, light.Center)
+	circSlice = append(circSlice, cir, cir2, cir3, cir4, cir5, cir6, cirlitGreen, cirlitGreen2, cirlitStripe, cirlitWhite, light, light1, triangle)
 
 	for i := 0; i < windowWidth; i++ {
 		X = float32(X) + xIncrement
