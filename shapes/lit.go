@@ -2,6 +2,9 @@ package shapes
 
 import "github.com/flabbergasted/RayTracer/rays"
 
+//ShadowObjects contains a list of all shadow casting intersectable shapes
+var ShadowObjects []Intersectable
+
 //Lighting represents a shape lit by some method
 type Lighting struct {
 	Inner       Intersectable
@@ -33,11 +36,28 @@ func reflectionAngleLight(p rays.Point, cameraPosition rays.Point, l Lighting) r
 	angleDifference := rays.Angle(pointNormal, pointToLight)
 
 	lightingAdjust = 1 - (angleDifference / maxAngle)
-
 	if lightingAdjust < 0.036 {
 		lightingAdjust = 0.036
 	}
+	if isInShadow(p, l) {
+		lightingAdjust = 0.036
+	}
 	return rays.Multiply(color, lightingAdjust)
+}
+
+func isInShadow(p rays.Point, l Lighting) bool {
+	res := false
+
+	//create ray between this point and the light source
+	shadowRay := rays.Ray{Origin: p, Direction: rays.Normalize(p, l.LightSource)}
+
+	if do, _, _ := ShadowObjects[0].DoesRayIntersect(shadowRay); do {
+		res = true
+	}
+
+	//check shapes list for intersection, if one is found this shape is in shadow.
+
+	return res
 }
 
 /* //returns lighting based on how far a point is away from the light source.
