@@ -7,6 +7,11 @@ type Point struct {
 	X, Y, Z float32
 }
 
+//Equals returns true if the 2 points are equivalent
+func (p Point) Equals(compare Point) bool {
+	return p.X == compare.X && p.Y == compare.Y && p.Z == compare.Z
+}
+
 //Ray represents a traditional vector 'ray' consisting of an origin and a direction
 type Ray struct {
 	Origin    Point

@@ -10,6 +10,17 @@ type Plane struct {
 	Color       rays.Point
 }
 
+//Equals returns true if the 2 Intersectables are equivalent
+func (pn Plane) Equals(i Intersectable) bool {
+	switch i.(type) {
+	case Plane:
+		compare := i.(Plane)
+		return pn.CornerOne.Equals(compare.CornerOne) && pn.CornerTwo.Equals(compare.CornerTwo) && pn.CornerThree.Equals(compare.CornerThree)
+	default:
+		return false
+	}
+}
+
 //DoesRayIntersect performs the ray intersection described here: https://www.scratchapixel.com/lessons/3d-basic-rendering/minimal-ray-tracer-rendering-simple-shapes/ray-plane-and-ray-disk-intersection
 func (pn Plane) DoesRayIntersect(r rays.Ray) (doesIntersect bool, intersectPoint0 rays.Point, intersectPoint1 rays.Point) {
 	var p0 rays.Point

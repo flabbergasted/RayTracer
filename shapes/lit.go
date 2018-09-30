@@ -12,6 +12,16 @@ type Lighting struct {
 	lightMethod func(p rays.Point, cameraPosition rays.Point, l Lighting) rays.Point
 }
 
+//Equals returns true if the 2 Intersectables are equivalent
+func (l Lighting) Equals(i Intersectable) bool {
+	switch i.(type) {
+	case Lighting:
+		return l.Inner.Equals(i.(Lighting).Inner)
+	default:
+		return l.Inner.Equals(i)
+	}
+}
+
 //DoesRayIntersect forwards the call to the decorated shape
 func (l Lighting) DoesRayIntersect(r rays.Ray) (bool, rays.Point, rays.Point) {
 	return l.Inner.DoesRayIntersect(r)
@@ -34,13 +44,14 @@ func reflectionAngleLight(p rays.Point, cameraPosition rays.Point, l Lighting) r
 	pointNormal := l.Inner.NormalAtPoint(p)
 	pointToLight := rays.Ray{Direction: rays.Subtract(p, l.LightSource)}
 	angleDifference := rays.Angle(pointNormal, pointToLight)
+	minAdjust := float32(0.155)
 
 	lightingAdjust = 1 - (angleDifference / maxAngle)
-	if lightingAdjust < 0.036 {
-		lightingAdjust = 0.036
+	if lightingAdjust < minAdjust {
+		lightingAdjust = minAdjust
 	}
 	if isInShadow(p, l) {
-		lightingAdjust = 0.036
+		lightingAdjust = minAdjust
 	}
 	return rays.Multiply(color, lightingAdjust)
 }
@@ -50,13 +61,19 @@ func isInShadow(p rays.Point, l Lighting) bool {
 
 	//create ray between this point and the light source
 	shadowRay := rays.Ray{Origin: p, Direction: rays.Normalize(p, l.LightSource)}
-
-	if do, _, _ := ShadowObjects[0].DoesRayIntersect(shadowRay); do {
-		res = true
-	}
+	shadowMag := rays.Magnitude(rays.Subtract(p, l.LightSource))
 
 	//check shapes list for intersection, if one is found this shape is in shadow.
-
+	for _, e := range ShadowObjects {
+		if !e.Equals(l) {
+			if do, intersectPoint, _ := e.DoesRayIntersect(shadowRay); do {
+				intersectRay := rays.Subtract(p, intersectPoint)
+				if shadowMag > rays.Magnitude(intersectRay) {
+					return true
+				}
+			}
+		}
+	}
 	return res
 }
 

@@ -17,6 +17,17 @@ type Circle struct {
 	YStripeWidth int
 }
 
+//Equals returns true if the 2 Intersectables are equivalent
+func (c Circle) Equals(i Intersectable) bool {
+	switch i.(type) {
+	case Circle:
+		compare := i.(Circle)
+		return c.Radius == compare.Radius && c.Center.Equals(compare.Center)
+	default:
+		return false
+	}
+}
+
 //DoesRayIntersect performs the ray intersection described here:https://www.scratchapixel.com/lessons/3d-basic-rendering/minimal-ray-tracer-rendering-simple-shapes/ray-sphere-intersection
 func (c Circle) DoesRayIntersect(r rays.Ray) (doesIntersect bool, intersectPoint0 rays.Point, intersectPoint1 rays.Point) {
 	L := rays.Subtract(c.Center, r.Origin)
