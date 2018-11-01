@@ -75,6 +75,12 @@ func Magnitude(p Point) float32 {
 	return float32(math.Sqrt(math.Pow(float64(p.X), 2) + math.Pow(float64(p.Y), 2) + math.Pow(float64(p.Z), 2)))
 }
 
+//MagnitudeRay returns the length of a vector described by the ray 'r' origin to direction.
+func MagnitudeRay(r Ray) float32 {
+	delta := Subtract(r.Direction, r.Origin)
+	return Magnitude(delta)
+}
+
 //Normalize returns a normalized direction between pointA and pointB (i.e. a vector of length 1)
 func Normalize(PointA Point, PointB Point) Point {
 	res, translatedB := Point{}, Point{}
@@ -114,4 +120,12 @@ func Angle(r1 Ray, r2 Ray) float32 {
 	dotRes := DotProduct(r1.Direction, r2.Direction) / (mag1 * mag2)
 
 	return float32(math.Acos(float64(dotRes)))
+}
+
+//RayFromAngle retuns a new Ray that is angled away from 'surfaceNormal' by the same number of degrees as intersectingRay (along the same plane containing both rays)
+func RayFromAngle(surfaceNormal Ray, intersectingRay Ray) Ray {
+	dotResult := float32(2) * DotProduct(surfaceNormal.Direction, intersectingRay.Direction)
+	pointResult := Multiply(surfaceNormal.Direction, dotResult)
+
+	return Ray{Direction: Subtract(intersectingRay.Direction, pointResult), Origin: surfaceNormal.Origin}
 }

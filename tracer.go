@@ -89,7 +89,7 @@ func generateShapes() []shapes.Intersectable {
 		CornerThree: rays.Point{X: 400, Y: 650, Z: 0},
 		Color:       rays.Point{X: 1, Y: 1, Z: 1}}, light.Center)
 
-	cirlitGreen := shapes.NewLightSourceCircle(shapes.Circle{Center: rays.Point{X: 400, Y: 450, Z: 150}, Radius: 100, Color: rays.Point{X: 0, Y: 1, Z: 0}}, light.Center)
+	cirlitGreen := shapes.NewLightSourceCircle(shapes.Circle{Center: rays.Point{X: 400, Y: 450, Z: 150}, Radius: 100, Color: rays.Point{X: 0, Y: 1, Z: 0}, Reflectivity: 1}, light.Center)
 	cirlitGreen2 := shapes.NewLightSourceCircle(shapes.Circle{Center: rays.Point{X: 525, Y: 500, Z: 50}, Radius: 100, Color: rays.Point{X: 0, Y: 1, Z: 0}}, light.Center)
 	cirlitStripe := shapes.NewLightSourceCircle(shapes.Circle{Center: rays.Point{X: 200, Y: 250, Z: 150}, Radius: 100, Color: rays.Point{X: 0.8, Y: 0.1, Z: 0.1}, YStripeColor: rays.Point{X: 0.3, Y: 0.0, Z: 0.3}, YStripeWidth: 3}, light.Center)
 	//cirlitWhite := shapes.NewLightSourceCircle(shapes.Circle{Center: rays.Point{X: 200, Y: 450, Z: 150}, Radius: 100, Color: rays.Point{X: 1, Y: 1, Z: 1}}, light.Center)
@@ -101,7 +101,9 @@ func generateShapes() []shapes.Intersectable {
 	cir5 := shapes.NewLightSourceCircle(shapes.Circle{Center: rays.Point{X: 600, Y: 200, Z: 30}, Radius: 100, Color: rays.Point{X: 0.8, Y: 0.1, Z: 0.1}, XStripeColor: rays.Point{X: 0.0, Y: 0.0, Z: 1.0}, XStripeWidth: 3, YStripeColor: rays.Point{X: 0.3, Y: 0.0, Z: 0.3}, YStripeWidth: 3}, light.Center)
 	cir6 := shapes.NewLightSourceCircle(shapes.Circle{Center: rays.Point{X: 120, Y: 450, Z: 1500}, Radius: 100, Color: rays.Point{X: 1, Y: 1, Z: 1}}, light.Center)
 	circSlice = append(circSlice, cirlitGreen2, cir, cirAqua, cir3, cir4, cir5, cir6, cirlitGreen, cirlitStripe, triangle)
+	//circSlice = append(circSlice, triangle)
 	shapes.ShadowObjects = circSlice
+	circSlice = append(circSlice, light)
 	return circSlice
 }
 func main() {

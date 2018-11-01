@@ -15,6 +15,7 @@ type Circle struct {
 	XStripeWidth int
 	YStripeColor rays.Point
 	YStripeWidth int
+	Reflectivity float32
 }
 
 //Equals returns true if the 2 Intersectables are equivalent
@@ -62,6 +63,34 @@ func (c Circle) ColorAtPoint(p rays.Point, cameraPosition rays.Point) rays.Point
 		color = c.YStripeColor
 	} else {
 		color = c.Color
+	}
+
+	if c.Reflectivity == 0 {
+		return color
+	}
+
+	intersectionRay := rays.Ray{Direction: rays.Subtract(cameraPosition, p), Origin: cameraPosition}
+	surfaceNormal := c.NormalAtPoint(p)
+	reflectRay := rays.RayFromAngle(surfaceNormal, intersectionRay)
+
+	reflectMag := float32(100000)
+	var zeroPoint, reflectedPoint rays.Point
+	var reflectedObject Intersectable
+
+	//check shapes list for intersection, if one is found then show that color for this point.
+	for _, e := range ShadowObjects {
+		if do, intersectPoint, _ := e.DoesRayIntersect(reflectRay); do && !e.Equals(c) {
+			newMag := rays.MagnitudeRay(reflectRay)
+			if reflectMag > newMag {
+				reflectMag = newMag
+				reflectedPoint = intersectPoint
+				reflectedObject = e
+			}
+		}
+	}
+
+	if !reflectedPoint.Equals(zeroPoint) {
+		return reflectedObject.ColorAtPoint(reflectedPoint, cameraPosition)
 	}
 	return color
 }
