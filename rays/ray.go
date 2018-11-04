@@ -18,6 +18,16 @@ type Ray struct {
 	Direction Point
 }
 
+//NewRayFromPoints returns a ray that originates at 'from' and points towards 'to'
+func NewRayFromPoints(from Point, to Point) Ray {
+	res := Ray{}
+
+	res.Direction = Subtract(to, from)
+	res.Origin = from
+
+	return res
+}
+
 //Subtract returns the subtraction between 2 points
 func Subtract(p1 Point, p2 Point) Point {
 	res := Point{}

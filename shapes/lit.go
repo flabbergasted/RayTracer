@@ -5,6 +5,9 @@ import "github.com/flabbergasted/RayTracer/rays"
 //ShadowObjects contains a list of all shadow casting intersectable shapes
 var ShadowObjects []Intersectable
 
+//ReflectiveObjects contains all shapes that could be reflected in another shape
+var ReflectiveObjects []Intersectable
+
 //Lighting represents a shape lit by some method
 type Lighting struct {
 	Inner       Intersectable

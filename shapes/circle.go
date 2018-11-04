@@ -69,7 +69,7 @@ func (c Circle) ColorAtPoint(p rays.Point, cameraPosition rays.Point) rays.Point
 		return color
 	}
 
-	intersectionRay := rays.Ray{Direction: rays.Subtract(cameraPosition, p), Origin: cameraPosition}
+	intersectionRay := rays.Ray{Direction: rays.Normalize(cameraPosition, p), Origin: cameraPosition}
 	surfaceNormal := c.NormalAtPoint(p)
 	reflectRay := rays.RayFromAngle(surfaceNormal, intersectionRay)
 
@@ -78,7 +78,7 @@ func (c Circle) ColorAtPoint(p rays.Point, cameraPosition rays.Point) rays.Point
 	var reflectedObject Intersectable
 
 	//check shapes list for intersection, if one is found then show that color for this point.
-	for _, e := range ShadowObjects {
+	for _, e := range ReflectiveObjects {
 		if do, intersectPoint, _ := e.DoesRayIntersect(reflectRay); do && !e.Equals(c) {
 			newMag := rays.MagnitudeRay(reflectRay)
 			if reflectMag > newMag {
@@ -92,7 +92,7 @@ func (c Circle) ColorAtPoint(p rays.Point, cameraPosition rays.Point) rays.Point
 	if !reflectedPoint.Equals(zeroPoint) {
 		return reflectedObject.ColorAtPoint(reflectedPoint, cameraPosition)
 	}
-	return color
+	return rays.Point{X: 0.7, Y: 0.1, Z: 0.1}
 }
 
 //NormalAtPoint returns the surface normal for this intersectable shape at point p
