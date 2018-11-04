@@ -112,6 +112,7 @@ func generateShapes() []shapes.Intersectable {
 }
 
 var cpuprofile = flag.String("cpuprofile", "", "write cpu profile to file")
+var memprofile = flag.String("memprofile", "", "write memory profile to this file")
 
 func main() {
 	flag.Parse()
@@ -182,6 +183,15 @@ func main() {
 		// Maintenance
 		window.SwapBuffers()
 		glfw.PollEvents()
+	}
+	if *memprofile != "" {
+		f, err := os.Create(*memprofile)
+		if err != nil {
+			log.Fatal(err)
+		}
+		pprof.WriteHeapProfile(f)
+		f.Close()
+		return
 	}
 }
 
