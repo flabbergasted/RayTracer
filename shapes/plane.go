@@ -8,6 +8,16 @@ type Plane struct {
 	CornerTwo   rays.Point
 	CornerThree rays.Point
 	Color       rays.Point
+	normal      rays.Ray
+}
+
+//NewPlane creates a new plane with the provided information.  Precalculates normal for performance.
+func NewPlane(corner1 rays.Point, corner2 rays.Point, corner3 rays.Point, color rays.Point) Plane {
+	p := Plane{Color: color, CornerOne: corner1, CornerTwo: corner2, CornerThree: corner3}
+
+	p.normal = calcNormal(p)
+
+	return p
 }
 
 //Equals returns true if the 2 Intersectables are equivalent
@@ -24,7 +34,7 @@ func (pn Plane) Equals(i Intersectable) bool {
 //DoesRayIntersect performs the ray intersection described here: https://www.scratchapixel.com/lessons/3d-basic-rendering/minimal-ray-tracer-rendering-simple-shapes/ray-plane-and-ray-disk-intersection
 func (pn Plane) DoesRayIntersect(r rays.Ray) (doesIntersect bool, intersectPoint0 rays.Point, intersectPoint1 rays.Point) {
 	var p0 rays.Point
-	surfaceNormal := calcNormal(pn)
+	surfaceNormal := pn.NormalAtPoint(intersectPoint0)
 	denom := rays.DotProduct(surfaceNormal.Direction, r.Direction)
 
 	if denom < 1e-6 {
@@ -48,9 +58,7 @@ func (pn Plane) ColorAtPoint(p rays.Point, cameraPosition rays.Point) rays.Point
 
 //NormalAtPoint returns the surface normal for this intersectable shape at point p
 func (pn Plane) NormalAtPoint(p rays.Point) rays.Ray {
-	normal := calcNormal(pn)
-	normal.Origin = p
-	return normal
+	return pn.normal
 }
 
 func calcNormal(pl Plane) rays.Ray {

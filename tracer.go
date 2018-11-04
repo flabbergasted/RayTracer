@@ -1,8 +1,11 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"log"
+	"os"
+	"runtime/pprof"
 	"strings"
 
 	"github.com/flabbergasted/RayTracer/rays"
@@ -83,11 +86,11 @@ func generateShapes() []shapes.Intersectable {
 
 	//light1 := shapes.Circle{Center: rays.Point{X: 400, Y: -600, Z: 0}, Radius: 5, Color: rays.Point{X: 1, Y: 1, Z: 1}}
 	light := shapes.Circle{Center: rays.Point{X: 250, Y: 250, Z: -250}, Radius: 5, Color: rays.Point{X: 1, Y: 1, Z: 1}}
-	triangle := shapes.NewLightSourceCircle(shapes.Plane{
-		CornerOne:   rays.Point{X: 0, Y: 650, Z: 400},
-		CornerTwo:   rays.Point{X: 400, Y: 650, Z: 400},
-		CornerThree: rays.Point{X: 400, Y: 650, Z: 0},
-		Color:       rays.Point{X: 1, Y: 1, Z: 1}}, light.Center)
+	triangle := shapes.NewLightSourceCircle(shapes.NewPlane(
+		rays.Point{X: 0, Y: 650, Z: 400},
+		rays.Point{X: 400, Y: 650, Z: 400},
+		rays.Point{X: 400, Y: 650, Z: 0},
+		rays.Point{X: 1, Y: 1, Z: 1}), light.Center)
 
 	cirlitGreen := shapes.NewLightSourceCircle(shapes.Circle{Center: rays.Point{X: 400, Y: 450, Z: 150}, Radius: 100, Color: rays.Point{X: 0, Y: 1, Z: 0}, Reflectivity: 1}, light.Center)
 	cirlitGreen2 := shapes.NewLightSourceCircle(shapes.Circle{Center: rays.Point{X: 525, Y: 500, Z: 50}, Radius: 100, Color: rays.Point{X: 0, Y: 1, Z: 0}}, light.Center)
@@ -103,10 +106,22 @@ func generateShapes() []shapes.Intersectable {
 	circSlice = append(circSlice, cirlitGreen2, cir, cirAqua, cir3, cir4, cir5, cir6, cirlitGreen, cirlitStripe, triangle)
 	//circSlice = append(circSlice, triangle)
 	shapes.ShadowObjects = circSlice
-	circSlice = append(circSlice, light)
+	//circSlice = append(circSlice, light)
 	return circSlice
 }
+
+var cpuprofile = flag.String("cpuprofile", "", "write cpu profile to file")
+
 func main() {
+	flag.Parse()
+	if *cpuprofile != "" {
+		f, err := os.Create(*cpuprofile)
+		if err != nil {
+			log.Fatal(err)
+		}
+		pprof.StartCPUProfile(f)
+		defer pprof.StopCPUProfile()
+	}
 	var VBO, VAO uint32
 	vertices := generatePixelData(generateShapes())
 	vsize := int32(len(vertices))
