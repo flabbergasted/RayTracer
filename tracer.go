@@ -40,7 +40,7 @@ func generatePixelData(shapeSlice []shapes.Intersectable) []pixel {
 		for j := 0; j < windowHeight; j++ {
 			Y = float32(Y) - yIncrement
 			index := (i * windowHeight) + j
-			color := rays.Point{X: 0.3, Y: 0.0, Z: 0.0}
+			color := rays.Point{X: 0.0, Y: 0.0, Z: 0.0}
 
 			dir = rays.Normalize(cameraPos, rays.Point{X: float32(i), Y: float32(j), Z: 0})
 			cameraRay := rays.Ray{Origin: cameraPos, Direction: dir}
@@ -171,7 +171,7 @@ func main() {
 
 	for !window.ShouldClose() {
 		input(window)
-		gl.ClearColor(0.2, 0.3, 0.3, 1.0)
+		gl.ClearColor(0.0, 0.0, 0.0, 1.0)
 		gl.Clear(gl.COLOR_BUFFER_BIT)
 
 		gl.UseProgram(shaderProgram)

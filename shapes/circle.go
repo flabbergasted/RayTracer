@@ -92,7 +92,7 @@ func (c Circle) ColorAtPoint(p rays.Point, cameraPosition rays.Point) rays.Point
 	if !reflectedPoint.Equals(zeroPoint) {
 		return reflectedObject.ColorAtPoint(reflectedPoint, cameraPosition)
 	}
-	return rays.Point{X: 0.7, Y: 0.1, Z: 0.1}
+	return rays.Point{X: 0.0, Y: 0.0, Z: 0.0}
 }
 
 //NormalAtPoint returns the surface normal for this intersectable shape at point p
