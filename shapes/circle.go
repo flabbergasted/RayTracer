@@ -6,7 +6,7 @@ import (
 	"github.com/flabbergasted/RayTracer/rays"
 )
 
-//Circle represents a 3d sphere
+//Circle represents a 3d sphere, with optional striping and reflectivity.
 type Circle struct {
 	Center       rays.Point
 	Radius       float32
