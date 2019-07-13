@@ -82,7 +82,12 @@ func DotProduct(p1 Point, p2 Point) float32 {
 
 //Magnitude returns the length of a vector between the origin and a point p
 func Magnitude(p Point) float32 {
-	return float32(math.Sqrt(math.Pow(float64(p.X), 2) + math.Pow(float64(p.Y), 2) + math.Pow(float64(p.Z), 2)))
+	powSum := square(p.X) + square(p.Y) + square(p.Z)
+	return float32(math.Sqrt(powSum))
+}
+
+func square(value float32) float64 {
+	return float64(value * value)
 }
 
 //MagnitudeRay returns the length of a vector described by the ray 'r' origin to direction.
